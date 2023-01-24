@@ -74,7 +74,7 @@ int main()
         });
 
     button test_btn(fm, nana::rectangle(150, 90, 150, 30));
-    test_btn.caption("Confirm");
+    test_btn.caption("Test Sound");
     test_btn.events().click([&](const nana::arg_click&) {
         ac.PlayAlarm();
         });
