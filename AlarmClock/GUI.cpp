@@ -3,78 +3,9 @@
 #include <nana/gui/widgets/label.hpp>
 #include <nana/gui/widgets/checkbox.hpp>
 #include <iostream>
-#include <windows.h>    //used for PlaySound function
-#include <mmdeviceapi.h>
-#include <endpointvolume.h> 
-#include <Functiondiscoverykeys_devpkey.h>
-#include <propvarutil.h>
-#include <chrono>
+#include "AlarmClock.h"
 
 using namespace std;
-
-int hour;
-int minute;
-
-void play()
-{
-    HRESULT hr;
-
-    CoInitialize(NULL);
-    IMMDeviceEnumerator* deviceEnumerator = NULL;
-    hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_INPROC_SERVER, __uuidof(IMMDeviceEnumerator), (LPVOID*)&deviceEnumerator);
-    IMMDevice* defaultDevice = NULL;
-    hr = deviceEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &defaultDevice);
-    deviceEnumerator->Release();
-    deviceEnumerator = NULL;
-
-    IAudioEndpointVolume* endpointVolume = NULL;
-    hr = defaultDevice->Activate(__uuidof(IAudioEndpointVolume), CLSCTX_INPROC_SERVER, NULL, (LPVOID*)&endpointVolume);
-    defaultDevice->Release();
-    defaultDevice = NULL;
-
-    float currentVolume = 0;
-
-    hr = endpointVolume->SetMasterVolumeLevelScalar((float)0, NULL);
-
-    bool played = PlaySound(TEXT("ride.wav"), NULL, SND_ASYNC | SND_SYSTEM);
-
-    // every second, increase volume by 0.6, till it reaches a maximum of 65 (that should wake me up)
-    auto start = std::chrono::system_clock::now();
-    while (true) {
-        endpointVolume->GetMasterVolumeLevelScalar(&currentVolume);
-        printf("Current volume is now: %f\n", currentVolume);
-        if (currentVolume >= 0.65) {
-            break;
-        }
-        else {
-            auto current_time = std::chrono::system_clock::now();
-            typedef std::chrono::duration<float> float_seconds;
-            auto secs = std::chrono::duration_cast<float_seconds>(current_time - start);
-            if ( secs.count() >= 1) {
-                endpointVolume->SetMasterVolumeLevelScalar((float)(currentVolume+0.006), NULL);
-                start = current_time;
-
-            }
-        }
-    }
-    endpointVolume->Release();
-    CoUninitialize();
-}
-
-void waitTillAlarm(const nana::arg_click&) {
-    printf("Waiting till %i%i\n", hour,minute);
-
-    while (true) {
-        std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-        std::time_t now_c = std::chrono::system_clock::to_time_t(now);
-        std::tm now_tm = *std::localtime(&now_c);
-        if (hour==now_tm.tm_hour && minute==now_tm.tm_min) {
-            play();
-            return;
-        }
-    }
-
-}
 
 
 int main()
@@ -121,24 +52,32 @@ int main()
         rd_group_min.add(*options_min.back());
     }
 
+    AlarmClock ac;
+
     rd_group.on_clicked([&] {
-        hour = rd_group.checked()+7;
+        int hour = rd_group.checked() + 7;
+        ac.SetHour(hour);
         printf("Hour is now: %i\n", hour);
         });
 
     rd_group_min.on_clicked([&] {
-        minute = rd_group_min.checked()*15;
+        int minute = rd_group_min.checked()*15;
+        ac.SetMinute(minute);
         printf("Min is now: %i\n", minute);
         });
 
 
-
-
-
-
     button btn(fm, nana::rectangle(150, 50, 150, 30));
     btn.caption("Confirm");
-    btn.events().click(waitTillAlarm);
+    btn.events().click([&](const nana::arg_click&) {
+        ac.WaitTillAlarm();
+        });
+
+    button test_btn(fm, nana::rectangle(150, 90, 150, 30));
+    test_btn.caption("Confirm");
+    test_btn.events().click([&](const nana::arg_click&) {
+        ac.PlayAlarm();
+        });
 
 
     fm.collocate();

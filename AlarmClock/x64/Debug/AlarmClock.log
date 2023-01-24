@@ -1,4 +1,0 @@
-﻿  GUI.cpp
-C:\Users\tewar\source\repos\AlarmClock\AlarmClock\GUI.cpp(127,9): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\tewar\source\repos\AlarmClock\AlarmClock\GUI.cpp(132,9): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-  AlarmClock.vcxproj -> C:\Users\tewar\source\repos\AlarmClock\x64\Debug\AlarmClock.exe

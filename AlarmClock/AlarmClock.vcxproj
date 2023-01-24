@@ -135,7 +135,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AlarmClock.cpp" />
     <ClCompile Include="GUI.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AlarmClock.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
