@@ -53,6 +53,8 @@ int main()
     }
 
     AlarmClock ac;
+    string alarm_track = "ride.wav";
+    ac.SetSound(alarm_track);
 
     rd_group.on_clicked([&] {
         int hour = rd_group.checked() + 7;

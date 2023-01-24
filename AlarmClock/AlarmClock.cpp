@@ -6,6 +6,7 @@
 #include <propvarutil.h>
 #include <chrono>
 #include <time.h>
+#include <string>
 
 AlarmClock::AlarmClock() = default;
 
@@ -17,8 +18,8 @@ void AlarmClock::SetMinute(int minute) {
     m_minute = minute;
 }
 
-void AlarmClock::SetSound(const char * track) {
-    alarm_track = track;
+void AlarmClock::SetSound(std::string &alarmtrack) {
+    alarm_track = alarmtrack;
 }
 
 void AlarmClock::WaitTillAlarm() {
@@ -56,7 +57,9 @@ void AlarmClock::PlayAlarm() {
 
     hr = endpointVolume->SetMasterVolumeLevelScalar((float)0, NULL);
 
-    bool played = PlaySound(TEXT("ride.wav"), NULL, SND_ASYNC | SND_SYSTEM);
+    std::wstring trackwstr = std::wstring(alarm_track.begin(), alarm_track.end());
+
+    bool played = PlaySound(trackwstr.c_str(), NULL, SND_ASYNC | SND_SYSTEM);
 
     // every second, increase volume by 0.6, till it reaches a maximum of 65 (that should wake me up)
     auto start = std::chrono::system_clock::now();
