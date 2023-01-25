@@ -5,6 +5,7 @@
 #include <iostream>
 #include "AlarmClock.h"
 
+
 using namespace std;
 
 
@@ -68,19 +69,18 @@ int main()
         printf("Min is now: %i\n", minute);
         });
 
-
     button btn(fm, nana::rectangle(150, 50, 150, 30));
     btn.caption("Confirm");
     btn.events().click([&](const nana::arg_click&) {
         ac.WaitTillAlarm();
         });
 
+
     button test_btn(fm, nana::rectangle(150, 90, 150, 30));
     test_btn.caption("Test Sound");
     test_btn.events().click([&](const nana::arg_click&) {
         ac.PlayAlarm();
         });
-
 
     fm.collocate();
     fm.show();

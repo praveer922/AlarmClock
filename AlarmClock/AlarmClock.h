@@ -8,6 +8,8 @@ private:
     int m_hour = 0;
     int m_minute = 0;
     std::string alarm_track;
+    void Wait();
+    void Play();
 
 public:
     AlarmClock();

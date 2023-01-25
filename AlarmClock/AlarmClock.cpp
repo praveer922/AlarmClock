@@ -7,6 +7,7 @@
 #include <chrono>
 #include <time.h>
 #include <string>
+#include <thread>
 
 AlarmClock::AlarmClock() = default;
 
@@ -22,9 +23,7 @@ void AlarmClock::SetSound(std::string &alarmtrack) {
     alarm_track = alarmtrack;
 }
 
-void AlarmClock::WaitTillAlarm() {
-    printf("Waiting till %i%i\n", m_hour, m_minute);
-
+void AlarmClock::Wait() {
     while (true) {
         std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
         std::time_t now_c = std::chrono::system_clock::to_time_t(now);
@@ -37,7 +36,13 @@ void AlarmClock::WaitTillAlarm() {
     }
 }
 
-void AlarmClock::PlayAlarm() {
+void AlarmClock::WaitTillAlarm() {
+    printf("Waiting till %i%i\n", m_hour, m_minute);
+    std::thread t = std::thread(&AlarmClock::Wait, this);
+    t.detach();
+}
+
+void AlarmClock::Play() {
     HRESULT hr;
 
     CoInitialize(NULL);
@@ -83,4 +88,9 @@ void AlarmClock::PlayAlarm() {
     endpointVolume->Release();
     CoUninitialize();
 
+}
+
+void AlarmClock::PlayAlarm() {
+    std::thread t = std::thread(&AlarmClock::Play, this);
+    t.detach();
 }
